@@ -1,0 +1,41 @@
+﻿@using BlazorServerTutorial.Data
+
+<!--using multiple routes for same destination-->
+<!--the type of parameter can also be specified to avoid conversion issues-->
+
+@page "/authors/{id}"
+@page "/authors/{authorId:int}"
+@page "/authors"
+
+<!--To navigate thge site using c# we need to inject the navigation manager class-->
+@inject NavigationManager NavigationManager
+
+<!--To use the data fetching objects we need to use an interface-->
+@inject IStudentService studentService
+
+<h3>Authors</h3>
+<hr />
+
+<p>Is js really dead?</p>
+
+<br />
+<button class="btn btn-danger" @onclick="OnBtnClick">Find out!</button>
+<br />
+
+<p>The route parameter is @Id</p>
+
+@code {
+
+    //To declare route parameters in the code file which we will later seperate
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public int AuthorId { get; set; }
+
+    void OnBtnClick()
+    {
+        //the way this nav manager works is that we call its navigate function that takes the desired route as a  parameter
+        NavigationManager.NavigateTo("/authors/details");
+    }
+}

@@ -1,0 +1,73 @@
+﻿@layout LoginLayout
+@page "/"
+@page "/login"
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider Auth
+@inject Blazored.SessionStorage.ISessionStorageService storageService
+
+<center>
+    <h5><b><i><u>@PromptHeader</u></i></b></h5>
+    <div class="col-6">
+        <EditForm Model="@User" OnValidSubmit="@ValidateUser">
+            <DataAnnotationsValidator />
+
+            <br />
+
+            <div class="col-12 row">
+                <label class="col-2 font-weight-bold"><i>Username:</i></label>
+                <InputText class="form-control col-3" @bind-Value="User.Username" />
+                &nbsp;<ValidationMessage For="@(()=>User.Username)" />
+            </div>
+
+            <br />
+
+            <div class="col-12 row">
+                <label class="col-2 font-weight-bold"><i>Password:</i></label>
+                <InputText class="form-control col-3" @bind-Value="User.Password" />
+                &nbsp;<ValidationMessage For="@(()=>User.Password)" />
+            </div>
+
+            <br />
+            <hr />
+        </EditForm>
+
+        <button class="btn btn-success" @onclick="ValidateUser">Login</button>
+        <br />
+
+        @if (User.Token is not null)
+        {
+            <h6>@User.Token</h6>
+        }
+    </div>
+<br />
+
+</center>
+
+@code {
+    public User User = new User();
+    public string PromptHeader = "Welcome!";
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        var username =await storageService.GetItemAsync<string>("username");
+
+        if (username != null)
+        {
+            User.Username = username;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task<bool> ValidateUser() {
+
+        ((CustomAuthenticationStateProvider)Auth).MarkUserAuthenticated(User.Username);
+
+        NavigationManager.NavigateTo("/home");
+
+        await storageService.SetItemAsync("username",User.Username);
+
+        return await Task.FromResult(true); }
+}

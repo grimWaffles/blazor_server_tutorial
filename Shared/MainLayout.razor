@@ -1,0 +1,48 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider Auth
+@inject NavigationManager NavigationManager
+
+<div class="page">
+    <div class="sidebar">
+        <AuthorizeView>
+            <Authorized>
+                <NavMenu />
+            </Authorized>
+        </AuthorizeView>       
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/login" @onclick="Logout">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/login" @onclick="Login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+        <div class="content px-4">
+           <AuthorizeView>
+               <Authorized>
+                   @Body
+               </Authorized>
+               <NotAuthorized>
+                   <h4>Nope.</h4>
+               </NotAuthorized>
+           </AuthorizeView>
+        </div>
+    </div>
+</div>
+
+@code{
+    public void Login()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+    public void Logout()
+    {
+        ((CustomAuthenticationStateProvider)Auth).MarkUserUnAuthorized();
+        NavigationManager.NavigateTo("/login");
+    }
+}
